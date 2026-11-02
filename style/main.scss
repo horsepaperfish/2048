@@ -1,549 +1,177 @@
-@import "helpers";
-@import "fonts/clear-sans.css";
+@import url("fonts/clear-sans.css");
 
-$field-width: 500px;
-$grid-spacing: 15px;
-$grid-row-cells: 4;
-$tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
-$tile-border-radius: 3px;
-
-$mobile-threshold: $field-width + 20px;
-
-$text-color: #776E65;
-$bright-text-color: #f9f6f2;
-
-$tile-color: #eee4da;
-$tile-gold-color: #edc22e;
-$tile-gold-glow-color: lighten($tile-gold-color, 15%);
-
-$game-container-margin-top: 40px;
-$game-container-background: #bbada0;
-
-$transition-speed: 100ms;
-
-html, body {
-  margin: 0;
-  padding: 0;
-
-  background: #faf8ef;
-  color: $text-color;
-  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 18px;
+/* Petal & paper — paper, pressed flowers, and a little room to grow. */
+:root {
+  --ink: #43533b;
+  --muted: #7c806d;
+  --paper: #faf7ed;
+  --sage: #7d8d69;
+  --hand: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+  --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
 }
-
+* { box-sizing: border-box; }
+html { min-width: 280px; background: #f4f1e6; }
 body {
-  margin: 80px 0;
+  margin: 0; color: var(--ink); font-family: "Clear Sans", sans-serif; font-size: 14px;
+  background-image: linear-gradient(90deg, #a0a98008 50%, transparent 50%), linear-gradient(#a0a98008 50%, transparent 50%);
+  background-size: 36px 36px; min-height: 100vh;
+}
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 200; opacity: .16; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.87' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23807050' opacity='.2' filter='url(%23n)' d='M0 0h180v180H0z'/%3E%3C/svg%3E"); }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; cursor: pointer; }
+a { color: inherit; text-underline-offset: 3px; }
+button:focus-visible, a:focus-visible { outline: 3px solid #ae745c; outline-offset: 5px; }
+button { border: 0; }
+.botanical-library { position: absolute; width: 0; height: 0; overflow: hidden; }
+.botanical { width: 40px; height: 40px; display: inline-block; flex-shrink: 0; }
+.page-shell { max-width: 1216px; margin: auto; padding: 0 45px; }
+.site-header { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #8d937332; }
+.wordmark { display: flex; align-items: center; gap: 9px; font-family: var(--serif); font-size: 16px; text-decoration: none; }
+.wordmark .botanical { width: 28px; height: 32px; }
+.introduction { text-align: center; padding: 36px 0 33px; }
+.eyebrow { font-size: 10px; letter-spacing: 2.5px; color: #828673; margin: 0 0 8px; }
+h1 { position: relative; width: fit-content; margin: 0 auto; font-family: var(--serif); font-size: clamp(48px, 5.7vw, 76px); font-weight: 400; line-height: 1.16; letter-spacing: -3px; color: #465a3c; }
+.ampersand { font-style: italic; font-size: .88em; color: #9a9b71; }
+.title-flower { position: absolute; top: -9px; right: -54px; transform: rotate(20deg); }
+.title-flower .botanical { width: 53px; height: 65px; }
+.subtitle { color: #858575; font-size: 14px; margin: 10px 0 18px; letter-spacing: .15px; }
+.edition { display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 9px; letter-spacing: 2.1px; color: #8b8c78; }
+.edition span { height: 1px; width: 32px; background: #9e9d7f66; }
+.garden-layout { display: grid; grid-template-columns: minmax(0, 224px) minmax(0, 464px) minmax(0, 224px); justify-content: center; align-items: start; gap: 43px; }
+.game-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 12px; }
+.scores-container { display: flex; gap: 10px; }
+.score-container, .best-container { position: relative; min-width: 88px; height: 63px; padding: 24px 14px 7px; text-align: center; font-family: var(--serif); font-size: 25px; line-height: 30px; background: #e6e8d8; border: 1px solid #b4bd9f55; border-radius: 7px 6px 8px 5px; }
+.best-container { background: #eee9d8; border-color: #c8b98a55; }
+.score-container::before, .best-container::before { position: absolute; top: 10px; left: 0; width: 100%; font-family: "Clear Sans", sans-serif; font-size: 8px; line-height: 10px; letter-spacing: 1.8px; color: #788367; }
+.score-container::before { content: "SCORE"; }
+.best-container::before { content: "PERSONAL BEST"; font-size: 7px; letter-spacing: 1px; color: #8e866c; }
+.score-addition { position: absolute; top: 20px; right: 9px; z-index: 20; font: 20px var(--hand); color: #74855c; pointer-events: none; animation: move-up .65s ease both; }
+.restart-button { background: #6f805e; color: #fffced; padding: 12px 17px; border-radius: 5px 7px 5px 6px; font-size: 11px; box-shadow: 0 2px 0 #4e6244; transition: background .2s, transform .2s; white-space: nowrap; }
+.restart-button span { font-size: 18px; vertical-align: -1px; padding-right: 4px; }
+.restart-button:hover { background: #596d49; transform: translateY(-1px); }
+.restart-button:active { transform: translateY(1px); }
+.board-wrap { position: relative; }
+.board-label { position: absolute; z-index: 4; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg); background: #eae7d1; padding: 4px 15px; font: 15px var(--hand); color: #7b8066; white-space: nowrap; box-shadow: 0 1px 3px #434a3022; }
+.game-container { --gap: 11px; --pad: 15px; position: relative; width: 100%; aspect-ratio: 1; padding: var(--pad); background: #849373; border-radius: 12px 10px 13px 10px; border: 1px solid #718262; box-shadow: 0 5px 0 #637952, 0 10px 22px #4d5a3820, inset 0 1px 0 #adba9677; touch-action: none; user-select: none; -webkit-user-select: none; }
+.grid-container, .tile-container { position: absolute; inset: var(--pad); }
+.grid-container { z-index: 1; display: grid; gap: var(--gap); grid-template-rows: repeat(4, 1fr); }
+.grid-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); }
+.grid-cell { border-radius: 6px 8px 6px 7px; background: #dce0c9; box-shadow: inset 0 1px 3px #52633d18; }
+.tile-container { z-index: 2; }
+.tile { position: absolute; width: calc((100% - 3 * var(--gap)) / 4); height: calc((100% - 3 * var(--gap)) / 4); transform: translate(calc(var(--x) * (100% + var(--gap))), calc(var(--y) * (100% + var(--gap)))); transition: transform 120ms ease-in-out; }
+.tile-inner { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 7px 5px 8px 6px; border: 1px solid #ffffff55; background: #f4f0db; color: #60704a; box-shadow: 1px 2px 2px #4f603626, inset 0 0 12px #fff5; }
+.tile-value { font-family: var(--serif); font-size: 35px; line-height: 1; position: relative; z-index: 2; font-weight: 700; margin-top: 4px; }
+.tile-art { width: 31px; height: 31px; margin-top: 2px; }
+.tile-4 .tile-inner { background: #e9e7bb; color: #707044; }
+.tile-8 .tile-inner { background: #ebceba; color: #855c44; }
+.tile-16 .tile-inner { background: #dcb7b5; color: #754d51; }
+.tile-32 .tile-inner { background: #c9c2d7; color: #605171; }
+.tile-64 .tile-inner { background: #b8c6a3; color: #405633; }
+.tile-128 .tile-inner { background: #dbc68a; color: #65542a; }
+.tile-256 .tile-inner { background: #cfa68d; color: #5f3c2d; }
+.tile-512 .tile-inner { background: #a6b9a3; color: #344e3a; }
+.tile-1024 .tile-inner { background: #899d7a; color: #fff9e8; }
+.tile-2048 .tile-inner { background: #e4ca7b; color: #685024; box-shadow: 0 0 20px #ead48e88; }
+.tile-super .tile-inner { background: #526b49; color: #fff8df; }
+.tile-128 .tile-value, .tile-256 .tile-value, .tile-512 .tile-value { font-size: 30px; }
+.tile-1024 .tile-value, .tile-2048 .tile-value, .tile-super .tile-value { font-size: 25px; }
+.tile-new .tile-inner { animation: appear .22s ease .08s backwards; }
+.tile-merged .tile-inner { z-index: 10; animation: pop .22s ease .08s backwards; }
+/* Equal flower margins keep the game centered beneath the title. */
+.game-section { grid-column: 2; min-width: 0; }
+.flowers-left { grid-column: 1; transform: scaleX(-1); }
+.flowers-right { grid-column: 3; }
+.flower-clippings { grid-row: 1; position: relative; height: 310px; margin: 105px 18px 0; pointer-events: none; }
+.flower-clippings .botanical { position: absolute; width: 110px; height: 135px; filter: drop-shadow(2px 3px 1px #5d513b12); }
+.clipping-daisy { left: 0; top: 60px; transform: rotate(-20deg); }
+.clipping-cosmos { right: 0; top: 0; transform: rotate(14deg); }
+.clipping-tulip { right: 5px; top: 170px; transform: rotate(18deg); }
+.under-board { text-align: center; font-family: var(--hand); font-size: 14px; color: #91937c; margin: 23px -10px 0; }
+.key-hint { font: 12px "Clear Sans", sans-serif; letter-spacing: 2px; border: 1px solid #b7b9a277; padding: 4px 6px; border-radius: 4px; margin-right: 8px; color: #77856a; }
+.garden-footer { text-align: center; color: #9a9c84; margin: 44px 0 34px; font-family: var(--hand); font-size: 17px; }
+.garden-footer span { font: 13px var(--serif); margin: 0 14px; color: #b4a46e; }
+.site-footer { border-top: 1px solid #8d937332; display: flex; justify-content: space-between; gap: 15px; padding: 19px 0 22px; font-size: 9px; letter-spacing: .3px; color: #999b88; }
+.game-message { position: absolute; inset: 0; z-index: 100; display: none; background: #f8f4e8ed; border-radius: 10px; text-align: center; flex-direction: column; justify-content: center; align-items: center; padding: 24px; animation: appear .3s ease; }
+.game-message.game-won, .game-message.game-over { display: flex; }
+.game-message > .botanical { width: 90px; height: 90px; }
+.game-message p { font-family: var(--serif); font-size: 35px; margin: 16px 0 24px; }
+.game-message .lower { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.game-message button { padding: 13px 16px; background: #6f805e; color: #fffced; border-radius: 5px; font-size: 12px; }
+.game-message .keep-playing-button { display: none; }
+.game-won .keep-playing-button { display: block; }
+@keyframes move-up { to { transform: translateY(-40px); opacity: 0; } }
+@keyframes appear { from { opacity: 0; transform: scale(.65); } to { opacity: 1; transform: scale(1); } }
+@keyframes pop { 0% { transform: scale(.85); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@media (max-width: 1120px) {
+  .page-shell { padding: 0 30px; }
+  .garden-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 440px) minmax(0, 1fr); gap: 26px; }
+}
+@media (max-width: 900px) {
+  .garden-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 440px) minmax(0, 1fr); gap: 18px; }
+  .flower-clippings { margin-inline: 0; }
+  .flower-clippings .botanical { width: 80px; height: 100px; }
+  .garden-footer { margin-top: 35px; }
+}
+@media (max-width: 760px) {
+  .garden-layout { display: block; max-width: 464px; margin: auto; }
+  .flower-clippings { display: none; }
+}
+@media (max-width: 650px) {
+  .page-shell { padding: 0 22px; }
+  .site-header { height: 65px; justify-content: center; }
+  .wordmark { font-size: 14px; }
+  .introduction { padding: 28px 0 25px; }
+  .eyebrow { font-size: 7px; letter-spacing: 1.7px; margin-bottom: 11px; }
+  h1 { font-size: clamp(37px, 10vw, 60px); letter-spacing: -1.8px; }
+  .title-flower { right: -26px; top: -12px; }
+  .title-flower .botanical { width: 31px; height: 41px; }
+  .subtitle { font-size: 11px; margin: 10px 0 16px; }
+  .edition { font-size: 8px; letter-spacing: 1.6px; }
+  .garden-layout { display: flex; flex-direction: column; gap: 0; max-width: 440px; margin: auto; }
+  .game-section { width: 100%; order: 0; }
+  .game-toolbar { margin-bottom: 25px; }
+  .score-container, .best-container { min-width: 75px; height: 57px; font-size: 22px; padding: 22px 9px 5px; }
+  .scores-container { gap: 7px; }
+  .restart-button { padding: 10px 12px; font-size: 10px; }
+  .game-container { --gap: 9px; --pad: 12px; }
+  .tile-value { font-size: clamp(23px, 7vw, 34px); margin-top: 2px; }
+  .tile-art { width: 26px; height: 26px; margin-top: 1px; }
+  .tile-128 .tile-value, .tile-256 .tile-value, .tile-512 .tile-value { font-size: clamp(20px, 6.3vw, 30px); }
+  .tile-1024 .tile-value, .tile-2048 .tile-value, .tile-super .tile-value { font-size: clamp(17px, 5.5vw, 25px); }
+  .under-board { font-size: 13px; margin-top: 21px; }
+  .key-hint { font-size: 9px; margin-right: 5px; }
+  .board-label { font-size: 14px; }
+  .flower-clippings { display: none; }
+  .garden-footer { font-size: 13px; margin: 35px 0 25px; }
+  .garden-footer span { margin: 0 3px; font-size: 10px; }
+  .site-footer { flex-direction: column; align-items: center; text-align: center; gap: 7px; font-size: 8px; }
+  .game-message p { font-size: 28px; }
+}
+@media (max-width: 350px) {
+  .page-shell { padding: 0 15px; }
+  .game-container { --gap: 7px; --pad: 10px; }
+  .tile-art { width: 22px; height: 22px; }
+  .score-container, .best-container { min-width: 65px; }
+  .restart-button { padding: 10px; }
+  .game-message > .botanical { width: 60px; height: 60px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-.heading {
-  @include clearfix;
-}
-
-h1.title {
-  font-size: 80px;
-  font-weight: bold;
-  margin: 0;
-  display: block;
-  float: left;
-}
-
-@include keyframes(move-up) {
-  0% {
-    top: 25px;
-    opacity: 1;
-  }
-
-  100% {
-    top: -50px;
-    opacity: 0;
-  }
-}
-
-.scores-container {
-  float: right;
-  text-align: right;
-}
-
-.score-container, .best-container {
-  $height: 25px;
-
-  position: relative;
-  display: inline-block;
-  background: $game-container-background;
-  padding: 15px 25px;
-  font-size: $height;
-  height: $height;
-  line-height: $height + 22px;
-  font-weight: bold;
-  border-radius: 3px;
-  color: white;
-  margin-top: 8px;
-  text-align: center;
-
-  &:after {
-    position: absolute;
-    width: 100%;
-    top: 10px;
-    left: 0;
-    text-transform: uppercase;
-    font-size: 13px;
-    line-height: 13px;
-    text-align: center;
-    color: $tile-color;
-  }
-
-  .score-addition {
-    position: absolute;
-    right: 30px;
-    color: red;
-    font-size: $height;
-    line-height: $height;
-    font-weight: bold;
-    color: rgba($text-color, .9);
-    z-index: 100;
-    @include animation(move-up 600ms ease-in);
-    @include animation-fill-mode(both);
-  }
-}
-
-.score-container:after {
-  content: "Score";
-}
-
-.best-container:after {
-  content: "Best";
-}
-
-p {
-  margin-top: 0;
-  margin-bottom: 10px;
-  line-height: 1.65;
-}
-
-a {
-  color: $text-color;
-  font-weight: bold;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-strong {
-  &.important {
-    text-transform: uppercase;
-  }
-}
-
-hr {
-  border: none;
-  border-bottom: 1px solid lighten($text-color, 40%);
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-
-.container {
-  width: $field-width;
-  margin: 0 auto;
-}
-
-@include keyframes(fade-in) {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-// Styles for buttons
-@mixin button {
-  display: inline-block;
-  background: darken($game-container-background, 20%);
-  border-radius: 3px;
-  padding: 0 20px;
-  text-decoration: none;
-  color: $bright-text-color;
-  height: 40px;
-  line-height: 42px;
-}
-
-// Game field mixin used to render CSS at different width
-@mixin game-field {
-  .game-container {
-    margin-top: $game-container-margin-top;
-    position: relative;
-    padding: $grid-spacing;
-
-    cursor: default;
-    -webkit-touch-callout: none;
-    -ms-touch-callout: none;
-
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-
-    -ms-touch-action: none;
-    touch-action: none;
-
-    background: $game-container-background;
-    border-radius: $tile-border-radius * 2;
-    width: $field-width;
-    height: $field-width;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-
-    .game-message {
-      display: none;
-
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background: rgba($tile-color, .5);
-      z-index: 100;
-
-      text-align: center;
-
-      p {
-        font-size: 60px;
-        font-weight: bold;
-        height: 60px;
-        line-height: 60px;
-        margin-top: 222px;
-        // height: $field-width;
-        // line-height: $field-width;
-      }
-
-      .lower {
-        display: block;
-        margin-top: 59px;
-      }
-
-      a {
-        @include button;
-        margin-left: 9px;
-        // margin-top: 59px;
-
-	&.keep-playing-button {
-	  display: none;
-	}
-      }
-
-      @include animation(fade-in 800ms ease $transition-speed * 12);
-      @include animation-fill-mode(both);
-
-      &.game-won {
-        background: rgba($tile-gold-color, .5);
-        color: $bright-text-color;
-
-	a.keep-playing-button {
-	  display: inline-block;
-	}
-      }
-
-      &.game-won, &.game-over {
-        display: block;
-      }
-    }
-  }
-
-  .grid-container {
-    position: absolute;
-    z-index: 1;
-  }
-
-  .grid-row {
-    margin-bottom: $grid-spacing;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    &:after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-  }
-
-  .grid-cell {
-    width: $tile-size;
-    height: $tile-size;
-    margin-right: $grid-spacing;
-    float: left;
-
-    border-radius: $tile-border-radius;
-
-    background: rgba($tile-color, .35);
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-
-  .tile-container {
-    position: absolute;
-    z-index: 2;
-  }
-
-  .tile {
-    &, .tile-inner {
-      width: ceil($tile-size);
-      height: ceil($tile-size);
-      line-height: ceil($tile-size);
-    }
-
-    // Build position classes
-    @for $x from 1 through $grid-row-cells {
-      @for $y from 1 through $grid-row-cells {
-        &.tile-position-#{$x}-#{$y} {
-          $xPos: floor(($tile-size + $grid-spacing) * ($x - 1));
-          $yPos: floor(($tile-size + $grid-spacing) * ($y - 1));
-          @include transform(translate($xPos, $yPos));
-        }
-      }
-    }
-  }
-}
-
-// End of game-field mixin
-@include game-field;
-
-.tile {
-  position: absolute; // Makes transforms relative to the top-left corner
-
-  .tile-inner {
-    border-radius: $tile-border-radius;
-
-    background: $tile-color;
-    text-align: center;
-    font-weight: bold;
-    z-index: 10;
-
-    font-size: 55px;
-  }
-
-  // Movement transition
-  @include transition($transition-speed ease-in-out);
-  -webkit-transition-property: -webkit-transform;
-  -moz-transition-property: -moz-transform;
-  transition-property: transform;
-
-  $base: 2;
-  $exponent: 1;
-  $limit: 11;
-
-  // Colors for all 11 states, false = no special color
-  $special-colors: false false, // 2
-                   false false, // 4
-                   #f78e48 true, // 8
-                   #fc5e2e true, // 16
-                   #ff3333 true, // 32
-                   #ff0000 true, // 64
-                   false true, // 128
-                   false true, // 256
-                   false true, // 512
-                   false true, // 1024
-                   false true; // 2048
-
-  // Build tile colors
-  @while $exponent <= $limit {
-    $power: pow($base, $exponent);
-
-    &.tile-#{$power} .tile-inner {
-      // Calculate base background color
-      $gold-percent: ($exponent - 1) / ($limit - 1) * 100;
-      $mixed-background: mix($tile-gold-color, $tile-color, $gold-percent);
-
-      $nth-color: nth($special-colors, $exponent);
-
-      $special-background: nth($nth-color, 1);
-      $bright-color: nth($nth-color, 2);
-
-      @if $special-background {
-        $mixed-background: mix($special-background, $mixed-background, 55%);
-      }
-
-      @if $bright-color {
-        color: $bright-text-color;
-      }
-
-      // Set background
-      background: $mixed-background;
-
-      // Add glow
-      $glow-opacity: max($exponent - 4, 0) / ($limit - 4);
-
-      @if not $special-background {
-        box-shadow: 0 0 30px 10px rgba($tile-gold-glow-color, $glow-opacity / 1.8),
-                    inset 0 0 0 1px rgba(white, $glow-opacity / 3);
-      }
-
-      // Adjust font size for bigger numbers
-      @if $power >= 100 and $power < 1000 {
-        font-size: 45px;
-
-        // Media queries placed here to avoid carrying over the rest of the logic
-        @include smaller($mobile-threshold) {
-          font-size: 25px;
-        }
-      } @else if $power >= 1000 {
-        font-size: 35px;
-
-        @include smaller($mobile-threshold) {
-          font-size: 15px;
-        }
-      }
-    }
-
-    $exponent: $exponent + 1;
-  }
-
-  // Super tiles (above 2048)
-  &.tile-super .tile-inner {
-    color: $bright-text-color;
-    background: mix(#333, $tile-gold-color, 95%);
-
-    font-size: 30px;
-
-    @include smaller($mobile-threshold) {
-      font-size: 10px;
-    }
-  }
-}
-
-@include keyframes(appear) {
-  0% {
-    opacity: 0;
-    @include transform(scale(0));
-  }
-
-  100% {
-    opacity: 1;
-    @include transform(scale(1));
-  }
-}
-
-.tile-new .tile-inner {
-  @include animation(appear 200ms ease $transition-speed);
-  @include animation-fill-mode(backwards);
-}
-
-@include keyframes(pop) {
-  0% {
-    @include transform(scale(0));
-  }
-
-  50% {
-    @include transform(scale(1.2));
-  }
-
-  100% {
-    @include transform(scale(1));
-  }
-}
-
-.tile-merged .tile-inner {
-  z-index: 20;
-  @include animation(pop 200ms ease $transition-speed);
-  @include animation-fill-mode(backwards);
-}
-
-.above-game {
-  @include clearfix;
-}
-
-.game-intro {
-  float: left;
-  line-height: 42px;
-  margin-bottom: 0;
-}
-
-.restart-button {
-  @include button;
-  display: block;
-  text-align: center;
-  float: right;
-}
-
-.game-explanation {
-  margin-top: 50px;
-}
-
-@include smaller($mobile-threshold) {
-  // Redefine variables for smaller screens
-  $field-width: 280px;
-  $grid-spacing: 10px;
-  $grid-row-cells: 4;
-  $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
-  $tile-border-radius: 3px;
-  $game-container-margin-top: 17px;
-
-  html, body {
-    font-size: 15px;
-  }
-
-  body {
-    margin: 20px 0;
-    padding: 0 20px;
-  }
-
-  h1.title {
-    font-size: 27px;
-    margin-top: 15px;
-  }
-
-  .container {
-    width: $field-width;
-    margin: 0 auto;
-  }
-
-  .score-container, .best-container {
-    margin-top: 0;
-    padding: 15px 10px;
-    min-width: 40px;
-  }
-
-  .heading {
-    margin-bottom: 10px;
-  }
-
-  // Show intro and restart button side by side
-  .game-intro {
-    width: 55%;
-    display: block;
-    box-sizing: border-box;
-    line-height: 1.65;
-  }
-
-  .restart-button {
-    width: 42%;
-    padding: 0;
-    display: block;
-    box-sizing: border-box;
-    margin-top: 2px;
-  }
-
-  // Render the game field at the right width
-  @include game-field;
-
-  // Rest of the font-size adjustments in the tile class
-  .tile .tile-inner {
-    font-size: 35px;
-  }
-
-  .game-message {
-    p {
-      font-size: 30px !important;
-      height: 30px !important;
-      line-height: 30px !important;
-      margin-top: 90px !important;
-    }
-
-    .lower {
-      margin-top: 30px !important;
-    }
-  }
-}
+.tile-position-1-1 { --x: 0; --y: 0; }
+.tile-position-1-2 { --x: 0; --y: 1; }
+.tile-position-1-3 { --x: 0; --y: 2; }
+.tile-position-1-4 { --x: 0; --y: 3; }
+.tile-position-2-1 { --x: 1; --y: 0; }
+.tile-position-2-2 { --x: 1; --y: 1; }
+.tile-position-2-3 { --x: 1; --y: 2; }
+.tile-position-2-4 { --x: 1; --y: 3; }
+.tile-position-3-1 { --x: 2; --y: 0; }
+.tile-position-3-2 { --x: 2; --y: 1; }
+.tile-position-3-3 { --x: 2; --y: 2; }
+.tile-position-3-4 { --x: 2; --y: 3; }
+.tile-position-4-1 { --x: 3; --y: 0; }
+.tile-position-4-2 { --x: 3; --y: 1; }
+.tile-position-4-3 { --x: 3; --y: 2; }
+.tile-position-4-4 { --x: 3; --y: 3; }
