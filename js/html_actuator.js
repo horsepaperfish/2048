@@ -62,7 +62,21 @@ HTMLActuator.prototype.addTile = function (tile) {
   this.applyClasses(wrapper, classes);
 
   inner.classList.add("tile-inner");
-  inner.textContent = tile.value;
+  var number = document.createElement("span");
+  number.className = "tile-value";
+  number.textContent = tile.value;
+  inner.appendChild(number);
+
+  var flowers = { 2: "sprout", 4: "daisy", 8: "tulip", 16: "cosmos",
+    32: "cosmos", 64: "sprout", 128: "butterfly", 256: "mushroom",
+    512: "bouquet", 1024: "bouquet", 2048: "bouquet" };
+  var artwork = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  artwork.setAttribute("class", "tile-art");
+  artwork.setAttribute("aria-hidden", "true");
+  var flower = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  flower.setAttribute("href", "#" + (flowers[tile.value] || "bouquet"));
+  artwork.appendChild(flower);
+  inner.appendChild(artwork);
 
   if (tile.previousPosition) {
     // Make sure that the tile gets rendered in the previous position first
@@ -126,7 +140,7 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 
 HTMLActuator.prototype.message = function (won) {
   var type    = won ? "game-won" : "game-over";
-  var message = won ? "You win!" : "Game over!";
+  var message = won ? "Your garden is in bloom!" : "Time for a fresh planting.";
 
   this.messageContainer.classList.add(type);
   this.messageContainer.getElementsByTagName("p")[0].textContent = message;

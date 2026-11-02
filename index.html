@@ -1,90 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>2048</title>
-
-  <link href="style/main.css" rel="stylesheet" type="text/css">
-  <link rel="shortcut icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
-  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+  <title>Petal &amp; paper · a little 2048 garden</title>
+  <meta name="description" content="A cozy little 2048 garden. Match numbers, collect blooms, and take a moment for yourself.">
+  <meta name="theme-color" content="#f6f3e9">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="style/main.css" rel="stylesheet">
+  <link rel="icon" href="style/images/flower.svg" type="image/svg+xml">
 </head>
 <body>
-  <div class="container">
-    <div class="heading">
-      <h1 class="title">2048</h1>
-      <div class="scores-container">
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
-      </div>
-    </div>
-
-    <div class="above-game">
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-      <a class="restart-button">New Game</a>
-    </div>
-
-    <div class="game-container">
-      <div class="game-message">
-        <p></p>
-        <div class="lower">
-	        <a class="keep-playing-button">Keep going</a>
-          <a class="retry-button">Try again</a>
+<svg xmlns="http://www.w3.org/2000/svg" class="botanical-library" aria-hidden="true"><defs>
+<symbol id="sprout" viewBox="0 0 64 64"><path d="M32 57Q35 35 27 22" fill="none" stroke="#597549" stroke-width="3" stroke-linecap="round"/><path d="M30 36C11 39 8 22 9 17C24 15 33 22 30 36Z" fill="#94aa72"/><path d="M33 30C31 13 44 8 55 8C55 22 46 32 33 30Z" fill="#718b55"/><path d="M14 22L29 33M47 15L35 27" stroke="#e7e9c6" stroke-width="1.5" fill="none"/></symbol>
+<symbol id="daisy" viewBox="0 0 64 64"><path d="M32 57V29M32 49Q16 35 16 43Q17 53 32 52M32 43Q45 31 46 39Q44 46 32 47" fill="#8fa273" stroke="#678251" stroke-width="2" stroke-linecap="round"/><g fill="#fffdf0" stroke="#d6cdb2" stroke-width="1"><ellipse cx="32" cy="16" rx="6" ry="11"/><ellipse cx="32" cy="36" rx="6" ry="11"/><ellipse cx="22" cy="26" rx="11" ry="6"/><ellipse cx="42" cy="26" rx="11" ry="6"/><ellipse cx="25" cy="19" rx="6" ry="9" transform="rotate(-45 25 19)"/><ellipse cx="39" cy="33" rx="6" ry="9" transform="rotate(-45 39 33)"/><ellipse cx="39" cy="19" rx="6" ry="9" transform="rotate(45 39 19)"/><ellipse cx="25" cy="33" rx="6" ry="9" transform="rotate(45 25 33)"/></g><circle cx="32" cy="26" r="8" fill="#d5ab4f"/><circle cx="30" cy="24" r="2" fill="#efcf78"/></symbol>
+<symbol id="tulip" viewBox="0 0 64 64"><path d="M32 57V30" stroke="#647d50" stroke-width="3"/><path d="M31 54Q12 53 15 34Q29 38 31 54M34 49Q34 32 49 30Q50 47 34 49" fill="#8c9f69"/><path d="M17 13L27 19L32 8L38 19L48 13Q50 38 32 38Q15 37 17 13Z" fill="#cc8c91" stroke="#b77680" stroke-width="1.5"/><path d="M27 20L32 33L38 20" fill="none" stroke="#e8b3ae" stroke-width="1.5"/></symbol>
+<symbol id="cosmos" viewBox="0 0 64 64"><path d="M32 60V28M32 50L17 40M32 45L46 36" stroke="#6e845a" stroke-width="2.5" fill="none"/><g fill="#c291af" stroke="#a77597" stroke-width="1"><ellipse cx="32" cy="15" rx="7" ry="12"/><ellipse cx="32" cy="35" rx="7" ry="12"/><ellipse cx="22" cy="25" rx="12" ry="7"/><ellipse cx="42" cy="25" rx="12" ry="7"/><ellipse cx="25" cy="18" rx="7" ry="10" transform="rotate(-45 25 18)"/><ellipse cx="39" cy="32" rx="7" ry="10" transform="rotate(-45 39 32)"/></g><circle cx="32" cy="25" r="6" fill="#ead38a"/></symbol>
+<symbol id="mushroom" viewBox="0 0 64 64"><path d="M27 29L24 54Q32 60 41 53L37 29" fill="#f4e9cf" stroke="#c6b99a" stroke-width="2"/><path d="M7 31Q10 6 31 7Q52 7 58 31Q33 41 7 31Z" fill="#c88369" stroke="#ac715b" stroke-width="1.5"/><ellipse cx="21" cy="22" rx="5" ry="4" fill="#fae8c9"/><ellipse cx="38" cy="16" rx="4" ry="3" fill="#fae8c9"/><ellipse cx="47" cy="28" rx="4" ry="3" fill="#fae8c9"/><path d="M12 57L11 48M49 57L52 48" stroke="#829165" stroke-width="2"/></symbol>
+<symbol id="butterfly" viewBox="0 0 64 64"><path d="M30 29C9 0 0 20 10 34C-1 51 18 61 31 39M34 29C56 0 63 20 54 34C64 51 45 61 33 39" fill="#d1ab5f" stroke="#ad8b49" stroke-width="1.5"/><path d="M31 23L33 48M31 26L25 18M33 26L39 18" fill="none" stroke="#6e7053" stroke-width="2.5" stroke-linecap="round"/><path d="M12 20Q17 19 26 32M52 20Q46 19 38 32" fill="none" stroke="#efda98" stroke-width="4"/></symbol>
+<symbol id="bouquet" viewBox="0 0 64 64"><path d="M20 24L35 59L47 21M32 18L35 59" stroke="#738450" stroke-width="2.5" fill="none"/><path d="M32 47Q12 37 15 29Q32 28 32 47M37 45Q53 31 55 37Q54 48 37 50" fill="#91a276"/><g fill="#e9b0a0"><circle cx="17" cy="16" r="7"/><circle cx="24" cy="23" r="7"/><circle cx="14" cy="25" r="7"/></g><g fill="#f1df9d"><circle cx="32" cy="8" r="6"/><circle cx="38" cy="15" r="6"/><circle cx="27" cy="16" r="6"/></g><g fill="#bb9ab0"><circle cx="47" cy="14" r="6"/><circle cx="53" cy="21" r="6"/><circle cx="43" cy="23" r="6"/></g><path d="M27 51Q35 46 43 51L34 55Z" fill="#d3987f"/></symbol>
+</defs></svg>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="Petal and paper home"><svg class="botanical " aria-hidden="true"><use href="#daisy"></use></svg><span>the little garden club</span></a>
+    </header>
+    <main>
+      <section class="introduction" aria-labelledby="page-title">
+        <p class="eyebrow">A FAMILIAR LITTLE GAME, IN FULL BLOOM</p>
+        <h1 id="page-title">Petal <span class="ampersand">&amp;</span> paper<span class="title-flower"><svg class="botanical " aria-hidden="true"><use href="#daisy"></use></svg></span></h1>
+        <p class="subtitle">A little room to play. A little room to grow.</p>
+        <div class="edition"><span></span> THE 2048 GARDEN <span></span></div>
+      </section>
+      <div class="garden-layout">
+        <div class="flower-clippings flowers-left" aria-hidden="true">
+          <svg class="botanical clipping-daisy"><use href="#daisy"></use></svg>
+          <svg class="botanical clipping-cosmos"><use href="#cosmos"></use></svg>
+          <svg class="botanical clipping-tulip"><use href="#tulip"></use></svg>
+        </div>
+        <section class="game-section" aria-label="2048 game">
+          <div class="game-toolbar">
+            <div class="scores-container">
+              <div class="score-container" aria-label="Score" aria-live="polite">0</div>
+              <div class="best-container" aria-label="Best score">0</div>
+            </div>
+            <button type="button" class="restart-button"><span aria-hidden="true">↻</span> A fresh start</button>
+          </div>
+          <div class="board-wrap">
+            <span class="board-label">a patch of possibilities</span>
+            <div class="game-container" role="group" aria-label="2048 garden board. Use arrow keys or swipe to combine matching numbers.">
+              <div class="game-message" role="status">
+                <svg class="botanical " aria-hidden="true"><use href="#bouquet"></use></svg>
+                <p></p>
+                <div class="lower">
+                  <button type="button" class="keep-playing-button">Keep growing</button>
+                  <button type="button" class="retry-button">Plant a new garden</button>
+                </div>
+              </div>
+              <div class="grid-container" aria-hidden="true"><div class="grid-row"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+<div class="grid-row"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+<div class="grid-row"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div>
+<div class="grid-row"><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div></div></div>
+              <div class="tile-container"></div>
+            </div>
+          </div>
+          <p class="under-board"><span class="key-hint" aria-hidden="true">↑ ← ↓ →</span> Arrow keys or swipe. Match numbers to reach 2048.</p>
+        </section>
+        <div class="flower-clippings flowers-right" aria-hidden="true">
+          <svg class="botanical clipping-daisy"><use href="#daisy"></use></svg>
+          <svg class="botanical clipping-cosmos"><use href="#cosmos"></use></svg>
+          <svg class="botanical clipping-tulip"><use href="#tulip"></use></svg>
         </div>
       </div>
-
-      <div class="grid-container">
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-        <div class="grid-row">
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-          <div class="grid-cell"></div>
-        </div>
-      </div>
-
-      <div class="tile-container">
-
-      </div>
-    </div>
-
-    <p class="game-explanation">
-      <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
-    </p>
-    <hr>
-    <p>
-    <strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
-    </p>
-    <hr>
-    <p>
-    Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
-    </p>
+      <div class="garden-footer"><span aria-hidden="true">✧</span> a small pause. a fresh page. a new beginning. <span aria-hidden="true">✧</span></div>
+    </main>
+    <footer class="site-footer"><span>Made for slow afternoons &amp; curious minds.</span><span>A floral reimagining of <a href="https://github.com/gabrielecirulli/2048">2048 by Gabriele Cirulli</a></span></footer>
   </div>
-
   <script src="js/bind_polyfill.js"></script>
   <script src="js/classlist_polyfill.js"></script>
   <script src="js/animframe_polyfill.js"></script>
